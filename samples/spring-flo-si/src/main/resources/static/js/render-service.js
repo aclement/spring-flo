@@ -37,6 +37,221 @@ define(function(require) {
         IMAGE_H = 40;
 
     var HORIZONTAL_PADDING = 10;
+
+    joint.shapes.si = {};
+    
+    joint.shapes.si.Channel = joint.shapes.basic.Generic.extend({
+
+        markup:
+        '<g class="shape">'+
+            '<rect class="border"/>' +
+            '<path class="the_shape" d="M 0 0 H 80 A 8 10 0 0 1 80 20 H 0"/>'+
+            '<ellipse class="the_shape" cx="0" cy="10" rx="8" ry="10"/>'+
+            '<text class="label"/>'+
+            '<text class="label2"/>'+
+        '</g>' +
+//        '<text class="stream-label"/>'+
+        '<rect class="input-port" />'+
+        '<rect class="output-port"/>'+
+        '<circle class="tap-port"/>',
+
+        defaults: joint.util.deepSupplement({
+            type: 'channel',//joint.shapes.flo.NODE_TYPE,
+            position: {x: 0, y: 0},
+            size: { width: 80, height: 20 },
+            attrs: {
+                '.': {
+                    magnet: false,
+                },
+                '.the_shape': {
+                	'stroke':'#000000'
+                },
+                // rounded edges around image
+//                '.border': {
+//                    width: IMAGE_W,
+//                    height: IMAGE_H,
+//                    rx: 2,
+//                    ry: 2,
+//                    'fill-opacity':0, // see through
+//                    stroke: '#eeeeee',
+//                    'stroke-width': 0,
+//                },
+//                '.box': {
+//                    width: IMAGE_W,
+//                    height: IMAGE_H,
+//                    rx: 2,
+//                    ry: 2,
+//                    //'fill-opacity':0, // see through
+//                    stroke: '#6db33f',
+//                    fill: '#eeeeee',
+//                    'stroke-width': 2,
+//                },
+                '.input-port': {
+                    type: 'input',
+                    port: 'input',
+                    r:4,
+                    height: 4, width: 4,
+                    magnet: true,
+                    fill: '#eeeeee',
+                    transform: 'translate(' + -2 + ',' + ((20/2)-2) + ')',
+                    stroke: '#34302d',
+                    'stroke-width': 1,
+                },
+                '.output-port': {
+                    type: 'output',
+                    port: 'output',
+                    r:4,
+                    height: 4, width: 4,
+                    magnet: true,
+                    fill: '#eeeeee',
+                    transform: 'translate(' + (80+8-2) + ',' + ((20/2)-2) + ')',
+                    stroke: '#34302d',
+                    'stroke-width': 1,
+                },
+//                '.tap-port': {
+//                    type: 'output',
+//                    port: 'tap',
+//                    r: 4,
+//                    magnet: true,
+//                    fill: '#eeeeee',
+//                    'ref-x': 0.5,
+//                    'ref-y': 0.99999999,
+//                    ref: '.border',
+//                    stroke: '#34302D'
+//                },
+                '.label': {
+                    'ref-x': 0.5, // jointjs specific: relative position to ref'd element
+                    'ref-y': 0.525,
+                    'y-alignment': 'middle',
+                    'x-alignment' : 'middle',
+                    ref: '.the_shape', // jointjs specific: element for ref-x, ref-y
+                    fill: 'black',
+                    'stroke': 'black',
+                    'font-size': '12px',
+                	'font-family': 'Ubuntu Mono',
+                	'color': 'black'
+                },
+                '.label2': {
+                    'y-alignment': 'middle',
+                    'ref-x': HORIZONTAL_PADDING+2, // jointjs specific: relative position to ref'd element
+                    'ref-y': 0.55, // jointjs specific: relative position to ref'd element
+                    ref: '.border', // jointjs specific: element for ref-x, ref-y
+                    fill: 'black',
+                    'font-size': 20
+                },
+//                '.stream-label': {
+//                    'x-alignment': 'middle',
+//                    'y-alignment': -0.999999,
+//                    'ref-x': 0.5, // jointjs specific: relative position to ref'd element
+//                    'ref-y': 0, // jointjs specific: relative position to ref'd element
+//                    ref: '.border', // jointjs specific: element for ref-x, ref-y
+//                    fill: '#AAAAAA',
+//                    'font-size': 15
+//                },
+//                '.shape': {
+//                }
+            }
+        }, joint.shapes.basic.Generic.prototype.defaults)
+    });
+    
+
+	joint.shapes.si.Node = joint.shapes.basic.Generic.extend({
+		markup: 
+	    		'<g class="shape"><image class="image" /></g>'+
+	    		'<rect class="border-white"/>' +
+	    		'<rect class="border"/>' +
+	    		'<rect class="box"/>'+
+	    		'<text class="label"/>'+
+	    		'<text class="label2"></text>'+
+	    		'<rect class="input-port" />'+
+	    		'<rect class="error-port" />'+
+	    		'<rect class="output-port"/>'+
+	    		'<rect class="output-port-cover"/>',
+
+	    defaults: joint.util.deepSupplement({
+
+	        type: 'node',//joint.shapes.flo.NODE_TYPE,
+	        position: {x: 0, y: 0},
+	        size: { width: IMAGE_W, height: IMAGE_H },
+	        attrs: {
+	            '.': { magnet: false },
+	            // rounded edges around image
+	            '.border': {
+	                width: IMAGE_W,
+	                height: IMAGE_H,
+	                rx: 3,
+	                ry: 3,
+	                'fill-opacity':0, // see through
+	                stroke: '#eeeeee',
+	                'stroke-width': 0
+	            },
+
+	            '.box': {
+	                width: IMAGE_W,
+	                height: IMAGE_H,
+	                rx: 3,
+	                ry: 3,
+	                //'fill-opacity':0, // see through
+	                stroke: '#6db33f',
+	                fill: '#eeeeee',
+	                'stroke-width': 1
+	            },
+	            '.input-port': {
+	            	type: 'input',
+	            	height: 4, width: 4,
+	            	magnet: true,
+	            	fill: '#eeeeee',
+	            	transform: 'translate(' + -2 + ',' + ((IMAGE_H/2)-2) + ')',
+	            	stroke: '#34302d',
+	            	'stroke-width': 1
+	            },
+	            '.output-port': {
+	            	type: 'output',
+	            	height: 4, width: 4,
+	            	magnet: true,
+	            	fill: '#eeeeee',
+	            	transform: 'translate(' + (IMAGE_W-2) + ',' + ((IMAGE_H/2)-2) + ')',
+	            	stroke: '#34302d',
+	            	'stroke-width': 1
+	            },
+	            '.error-port': {
+	            	type: 'output',
+	            	height: 4, width: 4,
+	            	magnet: true,
+	            	fill: '#ff0000',
+	            	transform: 'translate(' + (IMAGE_W/2-2) + ',' + ((IMAGE_H)-2) + ')',
+	            	stroke: '#34302d',
+	            	'stroke-width': 1
+	            },
+	            '.label': {
+	                'text-anchor': 'middle',
+	                'ref-x': 0.5, // jointjs specific: relative position to ref'd element
+	                // 'ref-y': -12, // jointjs specific: relative position to ref'd element
+	                'ref-y': 0.3,
+	                ref: '.border', // jointjs specific: element for ref-x, ref-y
+	                fill: 'black',
+	                'font-size': 14
+	            },
+	            '.label2': {
+	            	'text': '\u21d2',
+	                'text-anchor': 'middle',
+	                'ref-x': 0.15, // jointjs specific: relative position to ref'd element
+	                'ref-y': 0.15, // jointjs specific: relative position to ref'd element
+	                ref: '.border', // jointjs specific: element for ref-x, ref-y
+	                transform: 'translate(' + (IMAGE_W/2) + ',' + (IMAGE_H/2) + ')',
+	                fill: 'black',
+	                'font-size': 24
+	            },
+	            '.shape': {
+	            },
+	            '.image': {
+	                width: IMAGE_W,
+	                height: IMAGE_H
+	            }
+	        }
+	    }, joint.shapes.basic.Generic.prototype.defaults)
+	});
+	
 	
 	return ['$log', function($log) {
 
@@ -62,8 +277,12 @@ define(function(require) {
             });
         }
 
-        function createNode(/*metadata, props*/) {
-			return new joint.shapes.flo.Node();
+        function createNode(metadata, props) {
+        	if (metadata.name === 'channel') {
+        		return new joint.shapes.si.Channel();
+        	} else {
+        		return new joint.shapes.si.Node();        		
+        	}
         }
         
         function initializeNewNode(node, context) {
@@ -141,7 +360,8 @@ define(function(require) {
 			},
     	        	'.connection': { 'stroke-width': 3, 'stroke': 'black', 'stroke-linecap': 'round' },
     	        	'.marker-arrowheads': { display: 'none' },
-    	        	'.tool-options': { display: 'none' }
+    	        	'.tool-options': { display: 'none' },
+    	        	'stroke':'red'
     	        },
     	    }, joint.shapes.flo.Link.prototype.defaults));
         	return link;

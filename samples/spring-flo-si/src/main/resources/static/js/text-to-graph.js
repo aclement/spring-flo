@@ -23,20 +23,46 @@
 define(function() {
 	'use strict';
 	
+	function collapseOneLevel(prefix, obj, collector) {
+		var type = typeof obj;
+		if (obj == null) {
+			collector[prefix] = null;
+			return;
+		}
+		if (type === 'object') {
+			Object.keys(obj).forEach(function(key) {
+				collapseOneLevel(prefix.length==0?key:prefix+'.'+key,obj[key],collector);
+			});
+		} else if (type === 'array') {
+			for (var i=0;i<obj.length;i++) {
+				collapseOneLevel(prefix.length==0?key:prefix+'.'+i,obj[i],collector);
+			}
+		} else {
+			collector[prefix] = obj;
+		}
+	}
+	
+	function collapse(obj) {
+		var retval = {};
+		collapseOneLevel('',obj,retval);
+		console.log("collapsed = "+JSON.stringify(retval));
+		return retval;
+	}
+	
 	return function(input, flo, metamodel, metamodelUtils) {
      	// input is a string like this (3 nodes: foo, goo and hoo):   foo --a=b --c=d > goo --d=e --f=g>hoo
      	var trimmed = input.trim();
      	if (trimmed.length===0) {
      		return;
      	}
-     	console.log("HERE WE GO>"+input);
      	var integrationGraph = JSON.parse(input);
      	var nodes = integrationGraph.nodes;
      	var nodesMap = {};
      	for (var i=0;i<nodes.length;i++) {
      		var node = nodes[i];
             var group = metamodelUtils.matchGroup(metamodel, node.componentType, 1, 1);
-            var properties = {};
+            var stats = node.stats;
+            var properties = collapse(node.stats);
      		var newNode = flo.createNode(metamodelUtils.getMetadata(metamodel,node.componentType,group),properties);
  			newNode.attr('.label/text',node.name);
  			nodesMap[node.nodeId] = newNode;
@@ -44,8 +70,19 @@ define(function() {
      	var links = integrationGraph.links;
      	for (var i=0;i<links.length;i++) {
      		var link = links[i];
-     		  flo.createLink({'id': nodesMap[link.from].id,'selector': '.output-port'}, 
-     				  		 {'id': nodesMap[link.to].id,'selector': '.input-port'});
+     		var isErrorLink = false;
+     		var fromPort = '.output-port';
+     		var toName = nodesMap[link.to].attr('.label/text');
+     		var fromName = nodesMap[link.from].attr('.label/text');
+     		if (toName.toLowerCase().indexOf('error')!=-1) {
+     			fromPort = '.error-port';
+     			isErrorLink=true;
+     		}
+     		  var link = flo.createLink({'id': nodesMap[link.from].id,'selector': fromPort}, 
+     				  		 {'id': nodesMap[link.to].id, 'selector': '.input-port'});
+     		  if (isErrorLink) {
+     			  link.attr('.connection/stroke','red');
+     		  }
      	}
 //     	var lines = trimmed.split('\n');
 //     	for (var l=0;l<lines.length;l++) {
