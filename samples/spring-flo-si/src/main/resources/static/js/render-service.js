@@ -251,6 +251,128 @@ define(function(require) {
 	        }
 	    }, joint.shapes.basic.Generic.prototype.defaults)
 	});
+
+	joint.shapes.si.ServiceActivator = joint.shapes.basic.Generic.extend({
+		markup: 
+    		'<g class="shape"><image class="image" /></g>'+
+    		'<rect class="border-white"/>' +
+    		'<rect class="border"/>' +
+    		'<rect class="box"/>'+
+    		'<text class="label"/>'+
+    		'<text class="label2"></text>'+
+    		'<rect class="input-port" />'+
+    		'<rect class="error-port" />'+
+    		'<rect class="output-port"/>'+
+    		'<rect class="output-port-cover"/>'+
+    		'<path class="blockSolid" d="M 43 20 l 6 6 l 6 -6 l -6 -6 l -6 6"/>'+
+    		'<path class="blockEmpty" d="M 86 20 l 6 6 l 6 -6 l -6 -6 l -6 6"/>'+
+    		'<path class="arrowGray" d="M 0 20 h 33 l 0 -5 l 7 5 l -7 5 l 0 -5"/>'+
+    		'<path class="arrowBlack" d="M 52 20 h 26 l 0 -5 l 7 5 l -7 5 l 0 -5"/>'
+    		,
+
+
+	    defaults: joint.util.deepSupplement({
+
+	        type: 'node',//joint.shapes.flo.NODE_TYPE,
+	        position: {x: 0, y: 0},
+	        size: { width: IMAGE_W, height: IMAGE_H },
+	        attrs: {
+	            '.': { magnet: false },
+	            // rounded edges around image
+	            '.border': {
+	                width: IMAGE_W,
+	                height: IMAGE_H,
+	                rx: 3,
+	                ry: 3,
+	                'fill-opacity':0, // see through
+	                stroke: '#eeeeee',
+	                'stroke-width': 0
+	            },
+                '.arrowGray': {
+                	'stroke':'#aaaaaa',
+                    'stroke-width':'4',
+                    'fill': '#aaaaaa'
+                },
+                '.arrowBlack': {
+                	'stroke':'black',
+                    'stroke-width':'4',
+                    'fill': 'black'
+                },
+                '.blockSolid': {
+                	'stroke':'#000000',
+                    'stroke-width':'4',
+                    'fill': 'black'
+                },
+                '.blockEmpty': {
+                	'stroke':'#000000',
+                    'stroke-width':'4',
+                    'fill': 'white'
+                },
+	            '.box': {
+	                width: IMAGE_W,
+	                height: IMAGE_H,
+	                rx: 3,
+	                ry: 3,
+	                //'fill-opacity':0, // see through
+	                stroke: '#6db33f',
+	                fill: '#eeeeee',
+	                'stroke-width': 1
+	            },
+	            '.input-port': {
+	            	type: 'input',
+	            	height: 4, width: 4,
+	            	magnet: true,
+	            	fill: '#eeeeee',
+	            	transform: 'translate(' + -2 + ',' + ((IMAGE_H/2)-2) + ')',
+	            	stroke: '#34302d',
+	            	'stroke-width': 1
+	            },
+	            '.output-port': {
+	            	type: 'output',
+	            	height: 4, width: 4,
+	            	magnet: true,
+	            	fill: '#eeeeee',
+	            	transform: 'translate(' + (IMAGE_W-2) + ',' + ((IMAGE_H/2)-2) + ')',
+	            	stroke: '#34302d',
+	            	'stroke-width': 1
+	            },
+	            '.error-port': {
+	            	type: 'output',
+	            	height: 4, width: 4,
+	            	magnet: true,
+	            	fill: '#ff0000',
+	            	transform: 'translate(' + (IMAGE_W/2-2) + ',' + ((IMAGE_H)-2) + ')',
+	            	stroke: '#34302d',
+	            	'stroke-width': 1
+	            },
+	            '.label': {
+	                'text-anchor': 'middle',
+	                'ref-x': 0.5, // jointjs specific: relative position to ref'd element
+	                 'ref-y': -12, // jointjs specific: relative position to ref'd element
+//	                'ref-y': 0.3,
+	                ref: '.border', // jointjs specific: element for ref-x, ref-y
+	                fill: 'black',
+	                'font-size': 14
+	            },
+	            '.label2': {
+	            	'text': '\u21d2',
+	                'text-anchor': 'middle',
+	                'ref-x': 0.15, // jointjs specific: relative position to ref'd element
+	                'ref-y': 0.15, // jointjs specific: relative position to ref'd element
+	                ref: '.border', // jointjs specific: element for ref-x, ref-y
+	                transform: 'translate(' + (IMAGE_W/2) + ',' + (IMAGE_H/2) + ')',
+	                fill: 'black',
+	                'font-size': 24
+	            },
+	            '.shape': {
+	            },
+	            '.image': {
+	                width: IMAGE_W,
+	                height: IMAGE_H
+	            }
+	        }
+	    }, joint.shapes.basic.Generic.prototype.defaults)
+	});
 	
 	
 	return ['$log', function($log) {
@@ -280,6 +402,8 @@ define(function(require) {
         function createNode(metadata, props) {
         	if (metadata.name === 'channel') {
         		return new joint.shapes.si.Channel();
+        	} else if (metadata.name === 'service-activator') {
+        		return new joint.shapes.si.ServiceActivator();
         	} else {
         		return new joint.shapes.si.Node();        		
         	}

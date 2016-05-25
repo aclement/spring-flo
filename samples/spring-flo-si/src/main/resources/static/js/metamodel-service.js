@@ -32,7 +32,40 @@ define(function(require) {
 	    
 	    // Internally stored metamodel load promise
 	    var request;
-	    
+
+		var statsProperties = [
+		  	{'name':'loggingEnabled', 'default': '?', 'description':'?' },
+		  	{'name':'statsEnabled', 'default': '?', 'description':'?' },
+		  	{'name':'countsEnabled', 'default': '?', 'description':'?' },
+		  	{'name':'sendRate.count', 'default': '?', 'description':'?' },
+		  	{'name':'sendRate.min', 'default': '?', 'description':'?' },
+		  	{'name':'sendRate.max', 'default': '?', 'description':'?' },
+		  	{'name':'sendRate.mean', 'default': '?', 'description':'?' },
+		  	{'name':'sendRate.standardDeviation', 'default': '?', 'description':'?' },
+		  	{'name':'sendRate.countLong', 'default': '?', 'description':'?' },
+		  	{'name':'errorRate.count', 'default': '?', 'description':'?' },
+		  	{'name':'errorRate.min', 'default': '?', 'description':'?' },
+		  	{'name':'errorRate.max', 'default': '?', 'description':'?' },
+		  	{'name':'errorRate.mean', 'default': '?', 'description':'?' },
+		  	{'name':'errorRate.standardDeviation', 'default': '?', 'description':'?' },
+		  	{'name':'errorRate.countLong', 'default': '?', 'description':'?' },
+		  	{'name':'sendCount', 'default': '?', 'description':'?' },
+		  	{'name':'sendErrorCount', 'default': '?', 'description':'?' },
+		  	{'name':'timeSinceLastSend', 'default': '?', 'description':'?' },
+		  	{'name':'meanSendRate', 'default': '?', 'description':'?' },
+		  	{'name':'meanErrorRate', 'default': '?', 'description':'?' },
+		  	{'name':'meanErrorRatio', 'default': '?', 'description':'?' },
+		  	{'name':'meanSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'minSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'maxSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'standardDeviationSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'sendDuration.count', 'default': '?', 'description':'?' },
+		  	{'name':'sendDuration.min', 'default': '?', 'description':'?' },
+		  	{'name':'sendDuration.max', 'default': '?', 'description':'?' },
+		  	{'name':'sendDuration.mean', 'default': '?', 'description':'?' },
+		  	{'name':'sendDuration.standardDeviation', 'default': '?', 'description':'?' },
+		  	{'name':'sendDuration.countLong', 'default': '?', 'description':'?' }];
+		
 	    /**
 	     * Helper that goes from basic JSON to a lazy getter structure. Useful when the
 	     * metamodel is 'cheap' to build. If it is costly to discover the actual properties
@@ -40,6 +73,10 @@ define(function(require) {
 	     */
 		function createMetadata(entry) {
 			var props = {};
+			if (!entry.properties) {
+				// use the default stats properties
+				entry.properties = JSON.parse(JSON.stringify(statsProperties));
+			}
 			if (Array.isArray(entry.properties)) {
 				entry.properties.forEach(function(property) {
 					if (!property.id) {

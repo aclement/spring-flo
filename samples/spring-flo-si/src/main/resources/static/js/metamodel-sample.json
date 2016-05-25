@@ -1,64 +1,46 @@
 [
 {
   'name':'channel', 'group':'connectors', 'description':'Channel',
-  'properties':[
-  ],
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'publish-subscribe-channel', 'group':'connectors', 'description':'Publish subscribe channel',
-  'properties':[
-  ],
+  'name':'publish-subscribe-channel', 'group':'connectors', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'test-producer', 'group':'producers', 'description':'Test producer',
-  'properties':[
-  ],
+  'name':'test-producer', 'group':'producers', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'BareHandler', 'group':'producers', 'description':'Test producer',
-  'properties':[
-  ],
+  'name':'BareHandler', 'group':'producers', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 },
 {
-  'name':'filter', 'group':'producers', 'description':'Test producer',
-  'properties':[
-  ],
+  'name':'filter', 'group':'producers', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'aggregator', 'group':'producers', 'description':'Test producer',
-  'properties':[
-  ],
+  'name':'aggregator', 'group':'producers', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'logging-channel-adapter', 'group':'producers', 'description':'Test producer',
-  'properties':[
-  ],
+  'name':'logging-channel-adapter', 'group':'producers', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'service-activator', 'group':'producers', 'description':'Test producer',
-  'properties':[
-  ],
+  'name':'service-activator', 'group':'messaging-endpoint', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 
 ,
 {
-  'name':'chain', 'group':'producers', 'description':'Test producer',
-  'properties':[
-  ],
+  'name':'chain', 'group':'producers', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 

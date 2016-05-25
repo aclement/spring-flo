@@ -165,3 +165,8 @@ textarea:input:focus {
 .box {
 	stroke: #283e49;
 }
+
+
+.node-tooltip-option-name {
+	font-family: 'Ubuntu Mono', monospace;
+}
