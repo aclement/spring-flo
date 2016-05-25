@@ -339,6 +339,14 @@ define(function(require) {
                 if (offset) {
                     node.attr('.label1/ref-x', Math.max((offset + HORIZONTAL_PADDING + width / 2) / IMAGE_W, 0.5), { silent: true });
                 }
+                // Trim package prefix
+                var lastDot = label.lastIndexOf('.');
+                if (lastDot !== -1) {
+                	label = label.substring(lastDot+1);
+                    node.attr(labelPath, label, { silent: true });
+                    view.update();
+                    width = joint.V(textView).bbox(false, paper.viewport).width;                	
+                }
                 for (var i = 1; i < label.length && width > threshold; i++) {
                     node.attr(labelPath, label.substr(0, label.length - i) + '\u2026', { silent: true });
                     view.update();
