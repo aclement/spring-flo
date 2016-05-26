@@ -45,8 +45,8 @@ define(function(require) {
         markup:
         '<g class="shape">'+
             '<rect class="border"/>' +
-            '<path class="the_shape" d="M 0 0 H 80 A 8 10 0 0 1 80 20 H 0"/>'+
-            '<ellipse class="the_shape" cx="0" cy="10" rx="8" ry="10"/>'+
+            '<path class="the_shape" d="M 0 10 H 100 A 8 10 0 0 1 100 30 H 0"/>'+
+            '<ellipse class="the_shape" cx="0" cy="20" rx="8" ry="10"/>'+
             '<text class="label"/>'+
             '<text class="label2"/>'+
         '</g>' +
@@ -58,7 +58,7 @@ define(function(require) {
         defaults: joint.util.deepSupplement({
             type: 'channel',//joint.shapes.flo.NODE_TYPE,
             position: {x: 0, y: 0},
-            size: { width: 80, height: 20 },
+            size: { width: 100, height: 40 },
             attrs: {
                 '.': {
                     magnet: false,
@@ -93,7 +93,7 @@ define(function(require) {
                     height: 4, width: 4,
                     magnet: true,
                     fill: '#eeeeee',
-                    transform: 'translate(' + -2 + ',' + ((20/2)-2) + ')',
+                    transform: 'translate(' + -2 + ',' + ((20/2)-2+10) + ')',
                     stroke: '#34302d',
                     'stroke-width': 1,
                 },
@@ -104,7 +104,7 @@ define(function(require) {
                     height: 4, width: 4,
                     magnet: true,
                     fill: '#eeeeee',
-                    transform: 'translate(' + (80+8-2) + ',' + ((20/2)-2) + ')',
+                    transform: 'translate(' + (100+8-2) + ',' + ((20/2)-2+10) + ')',
                     stroke: '#34302d',
                     'stroke-width': 1,
                 },
@@ -264,10 +264,12 @@ define(function(require) {
     		'<rect class="error-port" />'+
     		'<rect class="output-port"/>'+
     		'<rect class="output-port-cover"/>'+
+    		'<g transform="scale(0.4)">'+
     		'<path class="blockSolid" d="M 43 20 l 6 6 l 6 -6 l -6 -6 l -6 6"/>'+
     		'<path class="blockEmpty" d="M 86 20 l 6 6 l 6 -6 l -6 -6 l -6 6"/>'+
     		'<path class="arrowGray" d="M 0 20 h 33 l 0 -5 l 7 5 l -7 5 l 0 -5"/>'+
-    		'<path class="arrowBlack" d="M 52 20 h 26 l 0 -5 l 7 5 l -7 5 l 0 -5"/>'
+    		'<path class="arrowBlack" d="M 52 20 h 26 l 0 -5 l 7 5 l -7 5 l 0 -5"/>'+
+    		'</g>'
     		,
 
 
@@ -290,22 +292,22 @@ define(function(require) {
 	            },
                 '.arrowGray': {
                 	'stroke':'#aaaaaa',
-                    'stroke-width':'4',
+                    'stroke-width':'2',
                     'fill': '#aaaaaa'
                 },
                 '.arrowBlack': {
                 	'stroke':'black',
-                    'stroke-width':'4',
+                    'stroke-width':'2',
                     'fill': 'black'
                 },
                 '.blockSolid': {
                 	'stroke':'#000000',
-                    'stroke-width':'4',
+                    'stroke-width':'2',
                     'fill': 'black'
                 },
                 '.blockEmpty': {
                 	'stroke':'#000000',
-                    'stroke-width':'4',
+                    'stroke-width':'2',
                     'fill': 'white'
                 },
 	            '.box': {
@@ -348,8 +350,8 @@ define(function(require) {
 	            '.label': {
 	                'text-anchor': 'middle',
 	                'ref-x': 0.5, // jointjs specific: relative position to ref'd element
-	                 'ref-y': -12, // jointjs specific: relative position to ref'd element
-//	                'ref-y': 0.3,
+//	                 'ref-y': -12, // jointjs specific: relative position to ref'd element
+	                'ref-y': 0.3,
 	                ref: '.border', // jointjs specific: element for ref-x, ref-y
 	                fill: 'black',
 	                'font-size': 14
@@ -400,7 +402,7 @@ define(function(require) {
         }
 
         function createNode(metadata, props) {
-        	if (metadata.name === 'channel') {
+        	if (metadata.name.toLowerCase().indexOf('channel') !== -1) {
         		return new joint.shapes.si.Channel();
         	} else if (metadata.name === 'service-activator') {
         		return new joint.shapes.si.ServiceActivator();
@@ -464,13 +466,19 @@ define(function(require) {
                     node.attr('.label1/ref-x', Math.max((offset + HORIZONTAL_PADDING + width / 2) / IMAGE_W, 0.5), { silent: true });
                 }
                 // Trim package prefix
+                
+                // Sample name: com.foo.method(a.b.c.Order)
+                var openParen = label.indexOf('(');
+                if (openParen !== -1) {
+                	label = label.substring(0,openParen);
+                }
                 var lastDot = label.lastIndexOf('.');
                 if (lastDot !== -1) {
-                	label = label.substring(lastDot+1);
-                    node.attr(labelPath, label, { silent: true });
-                    view.update();
-                    width = joint.V(textView).bbox(false, paper.viewport).width;                	
+            		label = label.substring(lastDot+1);
                 }
+                node.attr(labelPath, label, { silent: true });
+                view.update();
+                width = joint.V(textView).bbox(false, paper.viewport).width;                	
                 for (var i = 1; i < label.length && width > threshold; i++) {
                     node.attr(labelPath, label.substr(0, label.length - i) + '\u2026', { silent: true });
                     view.update();
@@ -488,12 +496,12 @@ define(function(require) {
     	        smooth: true,
         		attrs: {
     	        	'.': { 
-				//filter: { name: 'dropShadow', args: { dx: 1, dy: 1, blur: 2 } } 
-			},
+						//filter: { name: 'dropShadow', args: { dx: 1, dy: 1, blur: 2 } } 
+					},
     	        	'.connection': { 'stroke-width': 3, 'stroke': 'black', 'stroke-linecap': 'round' },
     	        	'.marker-arrowheads': { display: 'none' },
     	        	'.tool-options': { display: 'none' },
-    	        	'stroke':'red'
+    	        	'stroke':'red' // TODO necessary?
     	        },
     	    }, joint.shapes.flo.Link.prototype.defaults));
         	return link;

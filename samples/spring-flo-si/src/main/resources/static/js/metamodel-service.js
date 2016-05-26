@@ -34,7 +34,9 @@ define(function(require) {
 	    var request;
 
 		var statsProperties = [
-		  	{'name':'loggingEnabled', 'default': '?', 'description':'?' },
+		    {'name':'name','default':'?', 'description':'name'},
+		  	// TODO adds stats prefix to all these?
+		    {'name':'loggingEnabled', 'default': '?', 'description':'?' },
 		  	{'name':'statsEnabled', 'default': '?', 'description':'?' },
 		  	{'name':'countsEnabled', 'default': '?', 'description':'?' },
 		  	{'name':'sendRate.count', 'default': '?', 'description':'?' },

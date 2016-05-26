@@ -48,6 +48,26 @@ define(function() {
 		console.log("collapsed = "+JSON.stringify(retval));
 		return retval;
 	}
+
+    var MAGNITUDE_NUMBERS = [ 1000000000, 1000000, 1000];
+    var MAGNITUDE_LITERALS = ['B', 'M', 'K'];
+    
+	var rateLabel = function() {
+        var postFix, division, index = -1, fixed = 3;
+        do {
+            division = this.rate / MAGNITUDE_NUMBERS[++index];
+        } while (!Math.floor(division) && index < MAGNITUDE_NUMBERS.length);
+        if (index === MAGNITUDE_NUMBERS.length) {
+            postFix = '';
+            division = this.rate;
+        } else {
+            postFix = MAGNITUDE_LITERALS[index];
+        }
+        for (var decimal = 1; decimal <= 100 && Math.floor(division / decimal); decimal*=10) {
+            fixed--;
+        }
+        return division.toFixed(fixed) + postFix;
+    };
 	
 	return function(input, flo, metamodel, metamodelUtils) {
      	// input is a string like this (3 nodes: foo, goo and hoo):   foo --a=b --c=d > goo --d=e --f=g>hoo
@@ -63,6 +83,7 @@ define(function() {
             var group = metamodelUtils.matchGroup(metamodel, node.componentType, 1, 1);
             var stats = node.stats;
             var properties = collapse(node.stats);
+            properties.name = node.name;
      		var newNode = flo.createNode(metamodelUtils.getMetadata(metamodel,node.componentType,group),properties);
  			newNode.attr('.label/text',node.name);
  			nodesMap[node.nodeId] = newNode;
@@ -74,14 +95,41 @@ define(function() {
      		var fromPort = '.output-port';
      		var toName = nodesMap[link.to].attr('.label/text');
      		var fromName = nodesMap[link.from].attr('.label/text');
-     		if (toName.toLowerCase().indexOf('error')!=-1) {
+     		if (toName.toLowerCase().indexOf('error')!=-1 && fromName !== 'errorChannel') {
      			fromPort = '.error-port';
      			isErrorLink=true;
      		}
-     		  var link = flo.createLink({'id': nodesMap[link.from].id,'selector': fromPort}, 
+     		var jointLink = flo.createLink({'id': nodesMap[link.from].id,'selector': fromPort}, 
      				  		 {'id': nodesMap[link.to].id, 'selector': '.input-port'});
-     		  if (isErrorLink) {
-     			  link.attr('.connection/stroke','red');
+     		if (isErrorLink) {
+     			jointLink.attr('.connection/stroke','red');
+     		} else {
+     			if (nodes[link.from-1].stats && nodes[link.from-1].stats.hasOwnProperty('sendCount')) {
+     				jointLink.label(0, {
+	                  position: 15,
+	                  type: 'outgoing-rate',
+	//                  rate: sourceRates.outgoingRate,
+	                  attrs: {
+	                      text: {
+	                          transform: 'translate(0, -8)',
+	                          //text: '{{rateLabel()}}',
+	                          text: nodes[link.from-1].stats.sendCount,
+	                          'fill': 'black',
+	                          'stroke': 'none',
+	                          'font-size': '12'
+	                      },
+	                      rect: {
+	                    	  display: 'none'
+//	                          transform: 'translate(0, -5)',
+//	                          stroke: 'black',
+//	                          rx:1,ry:1,
+//	                          'border-width': '2px',
+//	                          'stroke-width': 1,
+//	                          fill: '#00B0A7'
+	                      }
+	                  }
+	              });
+     			}
      		  }
      	}
 //     	var lines = trimmed.split('\n');
