@@ -402,7 +402,7 @@ define(function(require) {
         }
 
         function createNode(metadata, props) {
-        	if (metadata.name.toLowerCase().indexOf('channel') !== -1) {
+        	if (metadata.name === 'channel' || metadata.name === 'publish-subscribe-channel') {
         		return new joint.shapes.si.Channel();
         	} else if (metadata.name === 'service-activator') {
         		return new joint.shapes.si.ServiceActivator();
@@ -467,6 +467,8 @@ define(function(require) {
                 }
                 // Trim package prefix
                 
+                if (!label.endsWith('?')) {
+                	console.log("modifying label "+label);
                 // Sample name: com.foo.method(a.b.c.Order)
                 var openParen = label.indexOf('(');
                 if (openParen !== -1) {
@@ -486,6 +488,7 @@ define(function(require) {
                     if (offset) {
                         node.attr('.label1/ref-x', Math.max((offset + HORIZONTAL_PADDING + width / 2) / IMAGE_W, 0.5), { silent: true });
                     }
+                }
                 }
                 view.update();
             }

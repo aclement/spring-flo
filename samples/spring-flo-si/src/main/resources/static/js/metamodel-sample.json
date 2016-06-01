@@ -62,5 +62,9 @@
   'name':'chain', 'group':'producers', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
-
+,
+{
+  'name':'stream:outbound-channel-adapter(character)', 'group':'messaging-endpoints', 'description':'?',
+  'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
+}
 ]
