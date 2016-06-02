@@ -20,8 +20,9 @@
  * @author Alex Boyko
  * @author Andy Clement
  */
-define(function() {
+define(function(require) {
 	'use strict';
+	var joint = require('joint');
 	
 	function collapseOneLevel(prefix, obj, collector) {
 		var type = typeof obj;
@@ -72,6 +73,19 @@ define(function() {
         return division.toFixed(fixed) + postFix;
     };
 	
+	function animate(link,p) {
+//		console.log("moving label on "+link.id+" to "+p);
+		if (!link.label(1)) {
+			console.log("No label1 on this link??");
+		} else {
+			link.label(1,{position: p})
+			p+=0.025
+			if (p>0.975) p = 0;
+			setTimeout(function() {animate(link,p)},25);
+		}
+	}
+
+		
 	return function(input, flo, metamodel, metamodelUtils) {
      	// input is a string like this (3 nodes: foo, goo and hoo):   foo --a=b --c=d > goo --d=e --f=g>hoo
      	var trimmed = input.trim();
@@ -85,10 +99,11 @@ define(function() {
      		var node = nodes[i];
             var group = metamodelUtils.matchGroup(metamodel, node.componentType, 1, 1);
             var stats = node.stats;
-            var props = collapse(node.stats);
+            var props = collapse(node.stats,'stats');
             var props2 = collapse(node.properties,'properties');
             for (var attrname in props2) { props[attrname] = props2[attrname]; }
             props.name = node.name;
+            props.id = node.nodeId;
      		var newNode = flo.createNode(metamodelUtils.getMetadata(metamodel,node.componentType,group),props);
      		var nodeName = node.name;
      		var metadataName = newNode.attr('metadata').name;
@@ -129,30 +144,56 @@ define(function() {
      			jointLink.attr('.connection/stroke','red');
      		} else {
      			if (nodes[link.from-1].stats && nodes[link.from-1].stats.hasOwnProperty('sendCount')) {
-     				jointLink.label(0, {
-	                  position: 15,
-	                  type: 'outgoing-rate',
-	//                  rate: sourceRates.outgoingRate,
-	                  attrs: {
-	                      text: {
-	                          transform: 'translate(0, -8)',
-	                          //text: '{{rateLabel()}}',
-	                          text: nodes[link.from-1].stats.sendCount,
-	                          'fill': 'black',
-	                          'stroke': 'none',
-	                          'font-size': '12'
-	                      },
-	                      rect: {
-	                    	  display: 'none'
-//	                          transform: 'translate(0, -5)',
-//	                          stroke: 'black',
-//	                          rx:1,ry:1,
-//	                          'border-width': '2px',
-//	                          'stroke-width': 1,
-//	                          fill: '#00B0A7'
-	                      }
-	                  }
-	              });
+//     				jointLink.label(0, {
+//	                  position: 15,
+//	                  type: 'outgoing-rate',
+//	//                  rate: sourceRates.outgoingRate,
+//	                  attrs: {
+//	                      text: {
+//	                          transform: 'translate(0, -8)',
+//	                          //text: '{{rateLabel()}}',
+//	                          text: nodes[link.from-1].stats.sendCount,
+//	                          'fill': 'black',
+//	                          'stroke': 'none',
+//	                          'font-size': '12'
+//	                      },
+//	                      rect: {
+//	                    	  display: 'none'
+////	                          transform: 'translate(0, -5)',
+////	                          stroke: 'black',
+////	                          rx:1,ry:1,
+////	                          'border-width': '2px',
+////	                          'stroke-width': 1,
+////	                          fill: '#00B0A7'
+//	                      }
+//	                  }
+//	              });
+//     				jointLink.label(1, {
+//  	                  position: 0.5,
+//  	                  type: 'message',
+//  	//                  rate: sourceRates.outgoingRate,
+//  	                  attrs: {
+//  	                      text: {
+//  	                          transform: 'translate(0, 0)',
+//  	                          //text: '{{rateLabel()}}',
+//  	                          text: ' ',
+//  	                          'fill': 'black',
+//  	                          'stroke': 'black',
+//  	                          'font-size': '2'
+//  	                      },
+//  	                      rect: {
+//  	                          transform: 'translate(0, 0)',
+//  	                          stroke: '#ffffff',
+//  	                          rx:1,ry:1,
+//  	                          'border-width': '3px',
+//  	                          'stroke-width': 2,
+//  	                          fill: '#ffffff'
+//  	                      }
+//  	                  }
+//  	              });
+//     				console.log("Label 1 on link id "+jointLink.id+" = "+jointLink.label(1));
+//     				setTimeout(function() {animate(this,0.0)}.bind(jointLink),1000);
+//     				jointLink.transition('labels/1/position',1,{valueFunction: joint.util.interpolate.unit, timingFunction: joint.util.timing.bounce});
      			}
      		  }
      	}

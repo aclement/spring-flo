@@ -11,10 +11,24 @@
 	z-index: 1;
 }
 
-#endpoint-input-div {
+.input-label-div {
 	font-family: "Roboto",sans-serif;
 	font-size: 18px;
 	color: #ffffff;
+	 display: inline-block;
+}
+
+#labelpath {
+	width: 200px;
+}
+
+#refreshrate {
+	width: 100px;
+}
+
+.inputfield {
+	font-family: "Roboto",sans-serif;
+	font-size: 18px;
 }
 
 #endpoint {
@@ -22,11 +36,13 @@
 	font-size: 18px;
 	width: 400px;
 }
+
 #endpoint-button {
 	font-family: "Roboto",sans-serif;
 	font-size: 18px;
 	height:80px;
 }
+
 body {
 	background-color: #283E49;
 	-webkit-user-select: none;

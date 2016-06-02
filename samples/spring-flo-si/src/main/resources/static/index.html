@@ -14,27 +14,31 @@
 		<div id="header" class="header">
 			Spring Integration Viewer
 		</div>
-		<div id="endpoint-input-div" ng-controller="SiController">
-			<form>
+		<div class="input-label-div" ng-controller="SiController">
 			  Spring Integration Graph endpoint: 
-			  <input type="text" name="endpoint" id="endpoint" ng-model="endpoint"><!--   value="http://localhost:8080/integration">-->
+			  <input type="text" class="inputfield" name="endpoint" id="endpoint" ng-model="endpoint" ng-enter="load(endpoint)">
 			  <input type="submit" class="button" value="Load" ng-click="load(endpoint)">
-			</form>
+			  &nbsp;&nbsp;&nbsp;&nbsp;Link label path:
+			  <input type="text" class="inputfield" name="labelpath" id="labelpath" ng-model="labelpath" ng-enter="updateLabelPath(labelpath)">
+			  &nbsp;&nbsp;&nbsp;&nbsp;Refresh rate (ms):
+			  <input type="text" class="inputfield" name="refreshrate" id="refreshrate" ng-model="refreshrate" ng-enter="updateRefreshRate(refreshrate)">
 		</div>
 		<div id="flo-container">
 			<flo-editor ng-cloak metamodel-service-name="SampleMetamodelService" render-service-name="SampleRenderService" editor-service-name="SampleEditorService" palette-size="170" 
 			min-zoom="10" max-zoom="300" zoom-step="10" ng-init="canvasControls={zoom:true};flo.noPalette=true;">
 				<div id="controls" class="controls">
-					<button class="button" id="clearGraph" ng-click="flo.clearGraph()">Create New Flow</button>
 					<!-- let's use the 'x' control on the nodes themselves when they are selected 
 					<button class="button" id="deleteSelectedNode" ng-click="flo.deleteSelectedNode()">Delete Selected Node</button>
 					 -->
 					<button class="button" id="performLayout" ng-click="flo.performLayout(); flo.fitToPage();">Reset Layout</button>
-					<button class="button" id="sync" ng-click="flo.updateTextRepresentation()">Synchronize</button>
 					<button class="button" id="readOnly" ng-click="flo.readOnlyCanvas(!flo.readOnlyCanvas())" ng-class="{on:flo.readOnlyCanvas()}">Read-Only</button>
-					<button class="button" id="noPalette" ng-click="flo.noPalette = !flo.noPalette" ng-class="{on:!flo.noPalette}">Palette</button>
-					<button class="button" id="editor" ng-click="editor = !editor" ng-lcass="{on:editor}">{{editor ? 'TextArea' : 'Editor'}}</button>
-					<!-- Defer to using zoom control on the canvas 
+					<!-- 
+					 <button class="button" id="clearGraph" ng-click="flo.clearGraph()">Create New Flow</button>
+					<button class="button" id="sync" ng-click="flo.updateTextRepresentation()">Synchronize</button>
+					 <button class="button" id="noPalette" ng-click="flo.noPalette = !flo.noPalette" ng-class="{on:!flo.noPalette}">Palette</button>
+					 <button class="button" id="editor" ng-click="editor = !editor" ng-lcass="{on:editor}">{{editor ? 'TextArea' : 'Editor'}}</button>
+					-->
+					 <!-- Defer to using zoom control on the canvas 
 					<span class="button">
 						<label>Zoom: </label>
 			    		<input id="zoomInput" type="text" ng-model="flo.zoomPercent" ng-model-options="{ getterSetter: true, updateOn: 'blur change' }" size="3"></input>

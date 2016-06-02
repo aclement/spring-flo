@@ -29,9 +29,14 @@ define(function(require) {
 	
     app.controller('SiController', ['$scope', '$http', 'SampleMetamodelService', function($scope, $http, metamodelService) {
       $scope.endpoint = 'http://localhost:8080/integration';
+      $scope.labelpath = "stats.sendcount";
+      $scope.refreshrate=0;
+
+      var refreshTimer;
 
       $scope.load = function(endpoint) {
     	console.log("Loading from endpoint: '"+endpoint+"'");
+    	$scope.endpoint = endpoint;
     	// Load the graph from the endpoint
     	$http.get(endpoint, { }).success(function(json) {
     		// console.log("JSON is "+json);
@@ -43,7 +48,57 @@ define(function(require) {
 	    	console.log(err);
 	    });    	
       };
-      
-    }]);
+
+        $scope.updateRefreshRate = function(newRefreshRate) {
+        	console.log("Update refresh rate: '"+newRefreshRate+"'");
+        	$scope.refreshrate=newRefreshRate;
+        	if (refreshTimer) {
+        		clearTimeout(refreshTimer);
+        	}
+        	if (newRefreshRate >0) {
+        		if (newRefreshRate < 250) {
+        			$scope.refreshrate = 250;
+        		} 
+        		var refresher = function() {
+        			refresh();
+        			refreshTimer = setTimeout(function() { refresher() }, $scope.refreshrate);
+        		}
+        		refreshTimer = setTimeout(refresher, $scope.refreshrate);
+        	} else {
+        		$scope.refreshrate=0;
+        	}
+        }
+
+        function refresh() {
+        	$http.get($scope.endpoint, { }).success(function(json) {
+        		metamodelService.updateGraphLabels($scope.flo, JSON.stringify(json), $scope.labelpath);
+	      	}).error(function(err) {
+	  	    	console.log(err);
+	  	    });    	        	
+        }
+        
+        $scope.updateLabelPath = function(newLabelPath) {
+        	console.log("Update label path: '"+newLabelPath+"'");
+        	$scope.labelpath = newLabelPath;
+        	// Update the graph from the endpoint
+        	$http.get($scope.endpoint, { }).success(function(json) {
+        		metamodelService.updateGraphLabels($scope.flo, JSON.stringify(json), newLabelPath);
+	      	}).error(function(err) {
+	  	    	console.log(err);
+	  	    });    	
+        };
+        
+      }]).directive('ngEnter', function() {
+          return function(scope, element, attrs) {
+              element.bind("keydown keypress", function(event) {
+                  if(event.which === 13) {
+                          scope.$apply(function(){
+                                  scope.$eval(attrs.ngEnter);
+                          });
+                          event.preventDefault();
+                  }
+              });
+          };
+  });
 	return app;
 });

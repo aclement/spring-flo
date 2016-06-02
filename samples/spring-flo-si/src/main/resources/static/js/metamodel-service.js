@@ -25,6 +25,7 @@ define(function(require) {
 	
 	var convertGraphToText = require('graph-to-text');
 	var convertTextToGraph = require('text-to-graph');
+	var updateGraph = require('update-graph');
 	
 	return ['$http', '$q', '$timeout', '$log', 'MetamodelUtils', function($http, $q, $timeout, $log, metamodelUtils) {
 
@@ -35,38 +36,39 @@ define(function(require) {
 
 		var statsProperties = [
 		    {'name':'name','default':'?', 'description':'name'},
+		    {'name':'id','default':'?', 'description':'node id'},
 		  	// TODO adds stats prefix to all these?
-		    {'name':'loggingEnabled', 'default': '?', 'description':'?' },
-		  	{'name':'statsEnabled', 'default': '?', 'description':'?' },
-		  	{'name':'countsEnabled', 'default': '?', 'description':'?' },
-		  	{'name':'sendRate.count', 'default': '?', 'description':'?' },
-		  	{'name':'sendRate.min', 'default': '?', 'description':'?' },
-		  	{'name':'sendRate.max', 'default': '?', 'description':'?' },
-		  	{'name':'sendRate.mean', 'default': '?', 'description':'?' },
-		  	{'name':'sendRate.standardDeviation', 'default': '?', 'description':'?' },
-		  	{'name':'sendRate.countLong', 'default': '?', 'description':'?' },
-		  	{'name':'errorRate.count', 'default': '?', 'description':'?' },
-		  	{'name':'errorRate.min', 'default': '?', 'description':'?' },
-		  	{'name':'errorRate.max', 'default': '?', 'description':'?' },
-		  	{'name':'errorRate.mean', 'default': '?', 'description':'?' },
-		  	{'name':'errorRate.standardDeviation', 'default': '?', 'description':'?' },
-		  	{'name':'errorRate.countLong', 'default': '?', 'description':'?' },
-		  	{'name':'sendCount', 'default': '?', 'description':'?' },
-		  	{'name':'sendErrorCount', 'default': '?', 'description':'?' },
-		  	{'name':'timeSinceLastSend', 'default': '?', 'description':'?' },
-		  	{'name':'meanSendRate', 'default': '?', 'description':'?' },
-		  	{'name':'meanErrorRate', 'default': '?', 'description':'?' },
-		  	{'name':'meanErrorRatio', 'default': '?', 'description':'?' },
-		  	{'name':'meanSendDuration', 'default': '?', 'description':'?' },
-		  	{'name':'minSendDuration', 'default': '?', 'description':'?' },
-		  	{'name':'maxSendDuration', 'default': '?', 'description':'?' },
-		  	{'name':'standardDeviationSendDuration', 'default': '?', 'description':'?' },
-		  	{'name':'sendDuration.count', 'default': '?', 'description':'?' },
-		  	{'name':'sendDuration.min', 'default': '?', 'description':'?' },
-		  	{'name':'sendDuration.max', 'default': '?', 'description':'?' },
-		  	{'name':'sendDuration.mean', 'default': '?', 'description':'?' },
-		  	{'name':'sendDuration.standardDeviation', 'default': '?', 'description':'?' },
-		  	{'name':'sendDuration.countLong', 'default': '?', 'description':'?' }];
+		    {'name':'stats.loggingEnabled', 'default': '?', 'description':'?' },
+		  	{'name':'stats.statsEnabled', 'default': '?', 'description':'?' },
+		  	{'name':'stats.countsEnabled', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendRate.count', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendRate.min', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendRate.max', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendRate.mean', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendRate.standardDeviation', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendRate.countLong', 'default': '?', 'description':'?' },
+		  	{'name':'stats.errorRate.count', 'default': '?', 'description':'?' },
+		  	{'name':'stats.errorRate.min', 'default': '?', 'description':'?' },
+		  	{'name':'stats.errorRate.max', 'default': '?', 'description':'?' },
+		  	{'name':'stats.errorRate.mean', 'default': '?', 'description':'?' },
+		  	{'name':'stats.errorRate.standardDeviation', 'default': '?', 'description':'?' },
+		  	{'name':'stats.errorRate.countLong', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendCount', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendErrorCount', 'default': '?', 'description':'?' },
+		  	{'name':'stats.timeSinceLastSend', 'default': '?', 'description':'?' },
+		  	{'name':'stats.meanSendRate', 'default': '?', 'description':'?' },
+		  	{'name':'stats.meanErrorRate', 'default': '?', 'description':'?' },
+		  	{'name':'stats.meanErrorRatio', 'default': '?', 'description':'?' },
+		  	{'name':'stats.meanSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'stats.minSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'stats.maxSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'stats.standardDeviationSendDuration', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendDuration.count', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendDuration.min', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendDuration.max', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendDuration.mean', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendDuration.standardDeviation', 'default': '?', 'description':'?' },
+		  	{'name':'stats.sendDuration.countLong', 'default': '?', 'description':'?' }];
 		
 	    /**
 	     * Helper that goes from basic JSON to a lazy getter structure. Useful when the
@@ -131,12 +133,17 @@ define(function(require) {
         function graphToText(flo, definition) {
 			definition.text = convertGraphToText(flo.getGraph()); 
         }
+        
+        function updateGraphLabels(flo, text, labelpath) {
+			updateGraph(text, flo.getGraph(), labelpath);
+        }
 
         function textToGraph(flo, definition) {
         	// TODO perhaps push these flo operations into the 'caller' to make this simpler
 			flo.getGraph().clear();
 			load().then(function(metamodel) {
 				convertTextToGraph(definition.text, flo, metamodel, metamodelUtils);
+				updateGraph(definition.text,flo.getGraph(),'stats.sendcount');
 	            flo.performLayout();
 	            flo.fitToPage();
 			});
@@ -145,6 +152,7 @@ define(function(require) {
 		return {
 			'load': load,
             'textToGraph': textToGraph,
+            'updateGraphLabels': updateGraphLabels,
             'graphToText': graphToText
 	    };
 	    

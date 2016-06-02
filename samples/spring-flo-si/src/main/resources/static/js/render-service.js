@@ -468,35 +468,39 @@ define(function(require) {
                 // Trim package prefix
                 
                 if (!label.endsWith('?')) {
-                	console.log("modifying label "+label);
-                // Sample name: com.foo.method(a.b.c.Order)
-                var openParen = label.indexOf('(');
-                if (openParen !== -1) {
-                	label = label.substring(0,openParen);
+//                	console.log("modifying label "+label);
+	                // Sample name: com.foo.method(a.b.c.Order)
+	                var openParen = label.indexOf('(');
+	                if (openParen !== -1) {
+	                	label = label.substring(0,openParen);
+	                }
+	                width = joint.V(textView).bbox(false, paper.viewport).width;                	
+	                if (width > threshold) {
+		                var lastDot = label.lastIndexOf('.');
+		                if (lastDot !== -1) {
+		            		label = label.substring(lastDot+1);
+		                }
+	                	console.log('driving label change');
+		                node.attr(labelPath, label, { silent: true });
+		                view.update();
+		                width = joint.V(textView).bbox(false, paper.viewport).width;                	
+		                for (var i = 1; i < label.length && width > threshold; i++) {
+		                    node.attr(labelPath, label.substr(0, label.length - i) + '\u2026', { silent: true });
+		                    view.update();
+		                    width = joint.V(textView).bbox(false, paper.viewport).width;
+		                    if (offset) {
+		                        node.attr('.label1/ref-x', Math.max((offset + HORIZONTAL_PADDING + width / 2) / IMAGE_W, 0.5), { silent: true });
+		                    }
+		                }
+	                }
                 }
-                var lastDot = label.lastIndexOf('.');
-                if (lastDot !== -1) {
-            		label = label.substring(lastDot+1);
-                }
-                node.attr(labelPath, label, { silent: true });
-                view.update();
-                width = joint.V(textView).bbox(false, paper.viewport).width;                	
-                for (var i = 1; i < label.length && width > threshold; i++) {
-                    node.attr(labelPath, label.substr(0, label.length - i) + '\u2026', { silent: true });
-                    view.update();
-                    width = joint.V(textView).bbox(false, paper.viewport).width;
-                    if (offset) {
-                        node.attr('.label1/ref-x', Math.max((offset + HORIZONTAL_PADDING + width / 2) / IMAGE_W, 0.5), { silent: true });
-                    }
-                }
-                }
-                view.update();
+//                view.update();
             }
         }
 
         function createLink() {
         	var link = new joint.shapes.flo.Link(joint.util.deepSupplement({
-    	        smooth: true,
+        		 smooth: true,
         		attrs: {
     	        	'.': { 
 						//filter: { name: 'dropShadow', args: { dx: 1, dy: 1, blur: 2 } } 
@@ -507,7 +511,9 @@ define(function(require) {
     	        	'stroke':'red' // TODO necessary?
     	        },
     	    }, joint.shapes.flo.Link.prototype.defaults));
-        	return link;
+//        	link.set('router',{'name':'metro'});
+//        	link.set('connector', { 'name': 'rounded' });
+            return link;
         }
         
         function isSemanticProperty(propertyPath) {
