@@ -40,6 +40,138 @@ define(function(require) {
 
     joint.shapes.si = {};
     
+    joint.routers.floforintegration = (function() {
+    	
+        // expands a box by specific value
+        function expand(bbox, val) {
+            return joint.g.rect(bbox).moveAndExpand({ x: -val, y: -val, width: 2 * val, height: 2 * val });
+        }
+        
+        function routeAround(obstacle, ref, anchor, opt) {
+            var padding = opt.elementPadding || 20;
+            
+        	var exp = expand(obstacle, padding);
+        	var anchorSide = obstacle.sideNearestToPoint(anchor);
+        	var expAnchor = exp.pointNearestToPoint(anchor);
+            var line = joint.g.line(ref, anchor);
+            var center = exp.center();
+        	var intersection;
+			var pts = [];
+        	
+        	if (anchorSide !== 'top') {
+        		intersection = line.intersection(joint.g.line(exp.origin(), exp.topRight()));
+        		if (intersection) {
+        			if (anchorSide === 'bottom') {
+        				if (intersection.x - exp.x + expAnchor.x - exp.x <= exp.width) {
+        					pts = [exp.origin(), exp.bottomLeft()];
+        				} else {
+        					pts = [exp.topRight(), exp.corner()];
+        				}
+        			} else {
+        				if (anchorSide === 'left') {
+        					pts = [exp.origin()];
+        				} else {
+        					pts = [exp.topRight()];
+        				}
+        			}
+        			if (opt.includeExtraPoints) {
+        				pts.push(expAnchor);
+        			}
+        			return pts;
+        		}
+        	}
+        	
+        	if (anchorSide !== 'bottom') {
+        		intersection = line.intersection(joint.g.line(exp.corner(), exp.bottomLeft()));
+        		if (intersection) {
+        			if (anchorSide === 'top') {
+        				if (intersection.x - exp.x + expAnchor.x - exp.x <= exp.width) {
+        					pts = [exp.bottomLeft(), exp.origin()];
+        				} else {
+        					pts = [exp.corner(), exp.topRight()];
+        				}
+        			} else {
+        				if (anchorSide === 'left') {
+        					pts = [exp.bottomLeft()];
+        				} else {
+        					pts = [exp.corner()];
+        				}
+        			}
+        			if (opt.includeExtraPoints) {
+        				pts.push(expAnchor);
+        			}
+        			return pts;
+        		}
+        	}
+        	
+        	if (anchorSide !== 'left') {
+        		intersection = line.intersection(joint.g.line(exp.origin(), exp.bottomLeft()));
+        		if (intersection) {
+        			if (anchorSide === 'right') {
+        				if (intersection.y - exp.y + expAnchor.y - exp.y <= exp.height) {
+        					pts = [exp.origin(), exp.topRight()];
+        				} else {
+        					pts = [exp.bottomLeft(), exp.corner()];
+        				}
+        			} else {
+        				if (anchorSide === 'top') {
+        					pts = [exp.origin()];
+        				} else {
+        					pts = [exp.bottomLeft()];
+        				}
+        			}
+        			if (opt.includeExtraPoints) {
+        				pts.push(expAnchor);
+        			}
+        			return pts;
+        		}
+        	}
+        	
+        	if (anchorSide !== 'right') {
+        		intersection = line.intersection(joint.g.line(exp.topRight(), exp.corner()));
+        		if (intersection) {
+        			if (anchorSide === 'left') {
+        				if (intersection.y - exp.y + expAnchor.y - exp.y <= exp.height) {
+        					pts = [exp.topRight(), exp.origin()];
+        				} else {
+        					pts = [exp.corner(), exp.bottomLeft()];
+        				}
+        			} else {
+        				if (anchorSide === 'top') {
+        					pts = [exp.topRight()];
+        				} else {
+        					pts = [exp.corner()];
+        				}
+        			}
+        			if (opt.includeExtraPoints) {
+        				pts.push(expAnchor);
+        			}
+        			return pts;
+        		}
+        	}
+        	
+        	return pts;
+        }
+
+        function findRoute(vertices, opt, linkView) {
+        	
+        	var paper = linkView.paper;
+        	var reference = vertices.length ? vertices[0] : joint.g.rect(linkView.targetBBox).center();
+        	var sourceAnchorPt = paper.options.linkConnectionPoint(linkView, linkView.sourceView, linkView.sourceMagnet, reference);
+        	var targetAnchorPt = paper.options.linkConnectionPoint(linkView, linkView.targetView, linkView.targetMagnet, sourceAnchorPt);
+        	var sourceRef = vertices.length ? joint.g.point(vertices[0]) : targetAnchorPt;
+        	var targetRef = vertices.length ? joint.g.point(vertices[vertices.length - 1]) : sourceAnchorPt;
+
+            var sourceRoute = linkView.sourceView ? routeAround(linkView.sourceView.model.getBBox(), sourceRef, sourceAnchorPt, opt).reverse() : [];
+            var targetRoute = linkView.targetView ? routeAround(linkView.targetView.model.getBBox(), targetRef, targetAnchorPt, opt) : [];
+            
+            return sourceRoute.concat(vertices).concat(targetRoute);
+        };
+
+        return findRoute;
+
+    })();
+    
     joint.shapes.si.Channel = joint.shapes.basic.Generic.extend({
 
         markup:
@@ -500,7 +632,8 @@ define(function(require) {
 
         function createLink() {
         	var link = new joint.shapes.flo.Link(joint.util.deepSupplement({
-        		 smooth: true,
+                router: { name: 'floforintegration', args: {elementPadding: 20} },
+                connector: { name: 'smooth' },
         		attrs: {
     	        	'.': { 
 						//filter: { name: 'dropShadow', args: { dx: 1, dy: 1, blur: 2 } } 
@@ -511,8 +644,6 @@ define(function(require) {
     	        	'stroke':'red' // TODO necessary?
     	        },
     	    }, joint.shapes.flo.Link.prototype.defaults));
-//        	link.set('router',{'name':'metro'});
-//        	link.set('connector', { 'name': 'rounded' });
             return link;
         }
         
