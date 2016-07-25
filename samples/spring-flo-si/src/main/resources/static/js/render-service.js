@@ -47,11 +47,9 @@ define(function(require) {
             return joint.g.rect(bbox).moveAndExpand({ x: -val, y: -val, width: 2 * val, height: 2 * val });
         }
         
-        function routeAround(obstacle, ref, anchor, opt) {
-            var padding = opt.elementPadding || 20;
+        function routeAround(exp, ref, anchor, opt) {
             
-        	var exp = expand(obstacle, padding);
-        	var anchorSide = obstacle.sideNearestToPoint(anchor);
+        	var anchorSide = exp.sideNearestToPoint(anchor);
         	var expAnchor = exp.pointNearestToPoint(anchor);
             var line = joint.g.line(ref, anchor);
             var center = exp.center();
@@ -152,18 +150,35 @@ define(function(require) {
         	
         	return pts;
         }
-
-        function findRoute(vertices, opt, linkView) {
+        
+        function findRoute(vx, opt, linkView) {
+        	
+        	var vertices = opt.metro ? joint.routers.metro(vx, opt, linkView) : vx;
+        	var sourceRoute = [], targetRoute = [];
         	
         	var paper = linkView.paper;
         	var reference = vertices.length ? vertices[0] : joint.g.rect(linkView.targetBBox).center();
         	var sourceAnchorPt = paper.options.linkConnectionPoint(linkView, linkView.sourceView, linkView.sourceMagnet, reference);
         	var targetAnchorPt = paper.options.linkConnectionPoint(linkView, linkView.targetView, linkView.targetMagnet, sourceAnchorPt);
-        	var sourceRef = vertices.length ? joint.g.point(vertices[0]) : targetAnchorPt;
-        	var targetRef = vertices.length ? joint.g.point(vertices[vertices.length - 1]) : sourceAnchorPt;
+        	var padding = opt.elementPadding || 20;
+        	
+        	if (linkView.sourceView) {
+            	var expSource = expand(linkView.sourceView.model.getBBox(), padding);
+            	while (vertices.length && expSource.containsPoint(vertices[0])) {
+            		vertices.splice(0, 1);
+            	}
+            	var sourceRef = vertices.length ? joint.g.point(vertices[0]) : targetAnchorPt;
+                sourceRoute = routeAround(expSource, sourceRef, sourceAnchorPt, opt).reverse();
+        	}
+        	if (linkView.targetView) {
+            	var expTarget = expand(linkView.targetView.model.getBBox(), padding);
+            	while (vertices.length && expTarget.containsPoint(vertices[vertices.length - 1])) {
+            		vertices.splice(vertices.length - 1, 1);
+            	}
+            	var targetRef = vertices.length ? joint.g.point(vertices[vertices.length - 1]) : sourceAnchorPt;
 
-            var sourceRoute = linkView.sourceView ? routeAround(linkView.sourceView.model.getBBox(), sourceRef, sourceAnchorPt, opt).reverse() : [];
-            var targetRoute = linkView.targetView ? routeAround(linkView.targetView.model.getBBox(), targetRef, targetAnchorPt, opt) : [];
+                targetRoute = routeAround(expTarget, targetRef, targetAnchorPt, opt);
+        	}
             
             return sourceRoute.concat(vertices).concat(targetRoute);
         };
@@ -632,7 +647,7 @@ define(function(require) {
 
         function createLink() {
         	var link = new joint.shapes.flo.Link(joint.util.deepSupplement({
-                router: { name: 'floforintegration', args: {elementPadding: 20} },
+                router: { name: 'floforintegration', args: {elementPadding: 20/*, metro: true*/} },
                 connector: { name: 'smooth' },
         		attrs: {
     	        	'.': { 
