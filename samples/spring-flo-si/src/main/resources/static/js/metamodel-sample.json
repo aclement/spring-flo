@@ -1,6 +1,16 @@
 [
 {
-  'name':'service-activator', 'group':'messaging-endpoints', 'description':'?',
+  'name':'general', 'group':'general', 'description':'',
+  'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
+}
+,
+{
+  'name':'service-activator', 'group':'messaging-endpoints', 'description':'',
+  'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
+}
+,
+{
+  'name':'message-handler', 'group':'messaging-endpoints', 'description':'',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
@@ -10,17 +20,22 @@
 }
 ,
 {
-  'name':'splitter', 'group':'messaging-channels', 'description':'Splitter',
+  'name':'splitter', 'group':'routing', 'description':'Splitter',
+  'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
+ }
+,
+{
+  'name':'router', 'group':'routing', 'description':'Router',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'router', 'group':'messaging-channels', 'description':'Router',
+  'name':'transformer', 'group':'transformation', 'description':'Transformer',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'bridge', 'group':'messaging-channels', 'description':'Bridge',
+  'name':'bridge', 'group':'routing', 'description':'Bridge',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
@@ -30,41 +45,46 @@
 }
 ,
 {
-  'name':'publish-subscribe-channel', 'group':'connectors', 'description':'?',
+  'name':'publish-subscribe-channel', 'group':'connectors', 'description':'',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'test-producer', 'group':'producers', 'description':'?',
+  'name':'test-producer', 'group':'producers', 'description':'',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'BareHandler', 'group':'producers', 'description':'?',
+  'name':'BareHandler', 'group':'producers', 'description':'',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 },
 {
-  'name':'filter', 'group':'producers', 'description':'?',
+  'name':'filter', 'group':'routing', 'description':'',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'aggregator', 'group':'messaging-channels', 'description':'Produce an output message after correlating some set of incoming messages',
+  'name':'aggregator', 'group':'routing', 'description':'Produce an output message after correlating some set of incoming messages',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'logging-channel-adapter', 'group':'producers', 'description':'?',
+  'name':'logging-channel-adapter', 'group':'connectors', 'description':'?',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'chain', 'group':'producers', 'description':'?',
+  'name':'chain', 'group':'messaging-endpoints', 'description':'',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ,
 {
-  'name':'stream:outbound-channel-adapter(character)', 'group':'messaging-endpoints', 'description':'?',
+  'name':'inbound-channel-adapter', 'group':'messaging-endpoints', 'description':'',
+  'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
+}
+,
+{
+  'name':'outbound-channel-adapter', 'group':'messaging-endpoints', 'description':'',
   'constraints':{ 'maxIncomingLinksNumber':10, 'maxOutgoingLinksNumber':10 }
 }
 ]

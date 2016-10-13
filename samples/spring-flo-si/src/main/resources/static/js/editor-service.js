@@ -56,62 +56,7 @@ define(function(require) {
 	        }
 
 	        function handleNodeDropping(flo, dragDescriptor) {
-	            var relinking = dragDescriptor.context && dragDescriptor.context.palette;
-	            var graph = flo.getGraph();
-	            var source = dragDescriptor.source ? dragDescriptor.source.cell : undefined;
-	            var target = dragDescriptor.target ? dragDescriptor.target.cell : undefined;
-	            if (target instanceof joint.dia.Element && target.attr('metadata/name')) {
-	                var type = source.attr('metadata/name');
-	                if (type === 'tap') {
-	                    // Fill in the channel on the new node
-	                    // work out tap name, something like: tap:stream:mystream.filter (filter optional if on head of stream)
-	                    // 1. work your way back from node that was dropped on to the first node (the one with no further links)
-	                    var oncell = target;
-	                    var headerCell = oncell;
-	                    var incomingLinks = graph.getConnectedLinks(oncell, { inbound: true });
-	                    while (incomingLinks.length !== 0) {
-	                        headerCell = graph.getCell(incomingLinks[0].get('source').id);
-	                        incomingLinks = graph.getConnectedLinks(headerCell, { inbound: true });
-	                    }
-	                    var streamname = 'STREAM';
-	                    if (headerCell.attr('stream-name')) {
-	                        streamname = headerCell.attr('stream-name');
-	                    }
-	                    else {
-	                        var streamId = headerCell.attr('stream-id');
-	                        if (streamId) {
-	                            streamname = 'STREAM'+streamId;
-	                        } else {
-	                            streamname = 'STREAM';
-	                        }
-	                        headerCell.attr('stream-name',streamname);
-	                    }
-	                    var channel = 'tap:stream:'+streamname;
-	                    var label2 = 'tap:stream:\n' + streamname;
-	                    if (oncell.id !== headerCell.id) {
-	                        channel = channel + '.' + oncell.attr('.label/text');
-	                        label2 = label2 + '.' + oncell.attr('.label/text');
-	                    }
-	                    source.attr('.label2/text', label2);
-	                    source.attr('props/channel', channel);
-	                    relinking = true;
-	                } else {
-	                    if (dragDescriptor.target.selector === '.output-port') {
-	                        moveNodeOnNode(flo, source, target, 'right', true);
-	                        relinking = true;
-	                    } else if (dragDescriptor.target.selector === '.input-port') {
-	                        moveNodeOnNode(flo, source, target, 'left', true);
-	                        relinking = true;
-	                    }
-	                }
-	            } else if (target instanceof joint.dia.Link) { // jshint ignore:line
-	                moveNodeOnLink(flo, source, target);
-	                relinking = true;
-	            }
-	            // Turn off auto layout
-//	            if (relinking) {
-//	                flo.performLayout();
-//	            }
+	        	// this is a viewer not an editor, so do not adjust the graph structure
 	        }
 
 	        function calculateDragDescriptor(flo, draggedView, targetUnderMouse, point, context) {

@@ -6,7 +6,7 @@
 	<link href="http://fonts.googleapis.com/css?family=Ubuntu+Mono|Montserrat:400,700" rel="stylesheet" type="text/css" />
 	<link href="http://fonts.googleapis.com/css?family=Roboto|Montserrat:400,700" rel="stylesheet" type="text/css" />
 	<link href="/webjars/spring-flo/dist/spring-flo.css" rel="stylesheet" />
-	<link href="css/sample.css" rel="stylesheet" />
+	<link href="css/flosi.css" rel="stylesheet" />
   
   <script data-main="js/main" src="/webjars/requirejs/require.js"></script>
 	</head>
@@ -27,33 +27,8 @@
 			<flo-editor ng-cloak metamodel-service-name="SampleMetamodelService" render-service-name="SampleRenderService" editor-service-name="SampleEditorService" palette-size="170" 
 			min-zoom="10" max-zoom="300" zoom-step="10" ng-init="canvasControls={zoom:true};flo.noPalette=true;">
 				<div id="controls" class="controls">
-					<!-- let's use the 'x' control on the nodes themselves when they are selected 
-					<button class="button" id="deleteSelectedNode" ng-click="flo.deleteSelectedNode()">Delete Selected Node</button>
-					 -->
 					<button class="button" id="performLayout" ng-click="flo.performLayout(); flo.fitToPage();">Reset Layout</button>
-					<button class="button" id="readOnly" ng-click="flo.readOnlyCanvas(!flo.readOnlyCanvas())" ng-class="{on:flo.readOnlyCanvas()}">Read-Only</button>
-					<!-- 
-					 <button class="button" id="clearGraph" ng-click="flo.clearGraph()">Create New Flow</button>
-					<button class="button" id="sync" ng-click="flo.updateTextRepresentation()">Synchronize</button>
-					 <button class="button" id="noPalette" ng-click="flo.noPalette = !flo.noPalette" ng-class="{on:!flo.noPalette}">Palette</button>
-					 <button class="button" id="editor" ng-click="editor = !editor" ng-lcass="{on:editor}">{{editor ? 'TextArea' : 'Editor'}}</button>
-					-->
-					 <!-- Defer to using zoom control on the canvas 
-					<span class="button">
-						<label>Zoom: </label>
-			    		<input id="zoomInput" type="text" ng-model="flo.zoomPercent" ng-model-options="{ getterSetter: true, updateOn: 'blur change' }" size="3"></input>
-			    		<label>%</label>
-			    		<input type="range" ng-model="flo.zoomPercent" ng-model-options="{ getterSetter: true }" step="10" max="300" min="10" data-type="range" name="range" class="range"></input>
-					</span>
-					-->
-					<!-- 
-					<span class="button">
-						<label>Grid Size: </label>
-			    		<input id="gridSizeInput" type="text" ng-model="flo.gridSize" ng-model-options="{ getterSetter: true, updateOn: 'blur change' }" size="2"></input>
-			    		<label>pixels</label>
-			    		<input type="range" ng-model="flo.gridSize" ng-model-options="{ getterSetter: true }" step="1" max="50" min="1" data-type="range" name="range" class="range"></input>
-					</span>
-					 -->
+					<button class="button" id="readOnly" ng-click="flo.readOnlyCanvas(!flo.readOnlyCanvas())" ng-class="{off:!flo.readOnlyCanvas()}">Read-Only</button>
 				</div>
 				<div class="flow-definition-container">
 					<textarea ng-if="editor" dsl-editor="true" id="flow-definition" class="flow-definition"></textarea>

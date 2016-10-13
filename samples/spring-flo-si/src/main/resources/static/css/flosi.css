@@ -117,8 +117,9 @@ pre {
 	text-align:right;
 }
 
-button.on {
+button.off {
     background-color: #00B0A7;
+	color: #283E49;
 }
 
 .flow-definition-container {

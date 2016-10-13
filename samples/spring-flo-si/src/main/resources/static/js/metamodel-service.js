@@ -37,7 +37,7 @@ define(function(require) {
 		var statsProperties = [
 		    {'name':'name','default':'?', 'description':'name'},
 		    {'name':'id','default':'?', 'description':'node id'},
-		  	// TODO adds stats prefix to all these?
+		    {'name':'componentType','default':'','description':'Detailed component type'},
 		    {'name':'stats.loggingEnabled', 'default': '?', 'description':'?' },
 		  	{'name':'stats.statsEnabled', 'default': '?', 'description':'?' },
 		  	{'name':'stats.countsEnabled', 'default': '?', 'description':'?' },

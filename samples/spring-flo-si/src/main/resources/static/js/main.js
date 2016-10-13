@@ -75,9 +75,9 @@ requirejs.config({
 
 define(['require','angular'], function (require, angular) {
         'use strict';
-         require(['domReady!', 'sample-app'], 
+         require(['domReady!', 'flosi-app'], 
            function (document) {
-        	 angular.bootstrap(document, ['floSampleApp']);
+        	 angular.bootstrap(document, ['floSiApp']);
            }
       );
 });

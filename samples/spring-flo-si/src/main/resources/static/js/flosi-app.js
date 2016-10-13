@@ -22,7 +22,7 @@ define(function(require) {
 	'use strict';
 	var angular = require('angular');
 	require('flo');
-	var app = angular.module('floSampleApp', [ 'spring.flo' ]);
+	var app = angular.module('floSiApp', [ 'spring.flo' ]);
 	app.factory('SampleMetamodelService', require('metamodel-service'));
 	app.factory('SampleRenderService', require('render-service'));
 	app.factory('SampleEditorService', require('editor-service'));

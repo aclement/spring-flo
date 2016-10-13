@@ -92,19 +92,51 @@ define(function(require) {
      	if (trimmed.length===0) {
      		return;
      	}
+     	var getMetadata = function(type) {
+     		var group = metamodelUtils.matchGroup(metamodel, type, 1, 1);
+     		var md = metamodelUtils.getMetadata(metamodel, type, group);
+     		if (!md || md.unresolved) {
+     			var secondAttempt;
+ 				// Examples:   mail:outbound-channel-adapter or file:inbound-channel-adapter
+     			if (type.indexOf("inbound-channel-adapter")!=-1) {
+ 					type = "inbound-channel-adapter";
+ 					group = metamodelUtils.matchGroup(metamodel, type, 1, 1);
+ 		     		secondAttempt = metamodelUtils.getMetadata(metamodel, type, group);
+ 					if (secondAttempt && !secondAttempt.unresolved) {
+ 						md = secondAttempt;
+ 					}
+     			} else if (type.indexOf("outbound-channel-adapter")!=-1) {
+ 					type = "outbound-channel-adapter";
+ 					group = metamodelUtils.matchGroup(metamodel, type, 1, 1);
+ 		     		secondAttempt = metamodelUtils.getMetadata(metamodel, type, group);
+ 					if (secondAttempt && !secondAttempt.unresolved) {
+ 						md = secondAttempt;
+ 					}
+     			} else {
+     				// use the general one - this will ensure validation is OK and tooltips work but
+     				// we aren't really sure what type it is.
+     				type = 'general';
+ 					group = metamodelUtils.matchGroup(metamodel, type, 1, 1);
+ 		     		secondAttempt = metamodelUtils.getMetadata(metamodel, type, group);
+ 					if (secondAttempt && !secondAttempt.unresolved) {
+ 						md = secondAttempt;
+ 					}
+     			}
+     		}
+     		return md;
+     	}
      	var integrationGraph = JSON.parse(input);
      	var nodes = integrationGraph.nodes;
      	var nodesMap = {};
      	for (var i=0;i<nodes.length;i++) {
      		var node = nodes[i];
-            var group = metamodelUtils.matchGroup(metamodel, node.componentType, 1, 1);
             var stats = node.stats;
             var props = collapse(node.stats,'stats');
             var props2 = collapse(node.properties,'properties');
             for (var attrname in props2) { props[attrname] = props2[attrname]; }
             props.name = node.name;
             props.id = node.nodeId;
-     		var newNode = flo.createNode(metamodelUtils.getMetadata(metamodel,node.componentType,group),props);
+     		var newNode = flo.createNode(getMetadata(node.componentType), props);
      		var nodeName = node.name;
      		var metadataName = newNode.attr('metadata').name;
      		if (metadataName === 'splitter' && nodeName.endsWith('.splitter')) {
@@ -113,17 +145,19 @@ define(function(require) {
      			nodeName = nodeName.substring(0,nodeName.length-'.aggregator'.length);
      		} else if (metadataName === 'service-activator' && nodeName.endsWith('serviceActivator')) {
      			nodeName = nodeName.substring(0,nodeName.length-'.serviceActivator'.length);
-     		} else if (metadataName === 'stream:outbound-channel-adapter(character)' && nodeName.endsWith('.adapter')) {
-     			nodeName = nodeName.substring(0,nodeName.length-'.adapter'.length);
      		}
      		if (node.name.indexOf('ConsumerEndpointFactoryBean')!==-1) {
      			if (metadataName === 'router' && props['properties.expression']) {
      				nodeName = props['properties.expression']+'?';
-     			} else {
+     			} else if (metadataName != 'general') {
      				nodeName = metadataName;
      			}
      		}
-     		
+ 			newNode.attr('props/componentType',node.componentType);
+//     		if (nodeName != node.componentType) {
+//     			// Don't lose the componentType. For example the nodeName might end up as mailOut but
+//     			// componentType is mail:outbound-channel-adapter
+//     		}
  			newNode.attr('.label/text',nodeName);
  			nodesMap[node.nodeId] = newNode;
      	}
@@ -134,7 +168,7 @@ define(function(require) {
      		var fromPort = '.output-port';
      		var toName = nodesMap[link.to].attr('.label/text');
      		var fromName = nodesMap[link.from].attr('.label/text');
-     		if (toName.toLowerCase().indexOf('error')!=-1 && fromName !== 'errorChannel') {
+     		if (link.type == 'error') {
      			fromPort = '.error-port';
      			isErrorLink=true;
      		}
