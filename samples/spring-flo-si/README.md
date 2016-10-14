@@ -1,6 +1,13 @@
-# A sample app for spring-flo
+# A sample app using spring-flo to visualize Spring Integration applications
 
-This is a very basic example of spring-flo usage.
+This sample uses flo as a live viewer for Spring Integration applications.
+
+This https://spring.io/blog/2016/04/26/spring-integration-4-3-m2-is-available[blog] discusses
+how to activate the new endpoint in a Spring Integration application. When
+the endpoint is active in your SI application, just enter that into the spring
+flo viewer. You should then see something like this:
+
+image::imgs/basicGraph.png[width="700"]
 
 # Running the sample
 
@@ -8,55 +15,28 @@ A basic Spring Boot app is used to serve the sample. Launch it with:
 
     mvn spring-boot:run
 
-then open http://localhost:8080 then you can type text into the box
-(e.g. "filewatch > ftp") or drag elements from the palette and link them
-together to build a pipeline.
+then open `http://localhost:8082`. In the `Spring Integration Graph Endpoint`
+field enter the url for the spring integration data, for example: `http://localhost:8080/integration`
+and the graph should load.
 
-# Understanding the sample
 
-Spring Flo allows simultaneous synchronization between some textual domain 
-specific language (DSL) and the graphical representation. You can type in the
-text version or you can interactively build the graph version. Any custom
-usage of spring-flo therefore needs three things:
+# Using the application
 
-- a metamodel of the domain. What are the 'things' you are connecting in your
-  pipeline and what are their properties?
-- a converter from the text form to the graph form.
-- a converter from the graph form to the text form.
+Once the graph is loaded you can drag nodes around to adjust the layout. (Press the `Read-Only`
+button to prevent moving nodes around).  Hovering over a node will show a tool tip with more
+information for that element. If you hover over a channel you will see many stats about
+traffic flowing over that channel:
 
-The same here includes a very basic domain that you can easily customize:
+image::imgs/tooltip.png[width="300"]
 
-- there are a handful of nodes with basic properties. These are defined in
-  `metamodel-sample.json` - that is a JSON array of the modules supported.
-- the DSL form is `module --key=value --key=value > nextModule --key=value`.
-- the conversion from text to graph is done in `text-to-graph.js`
-- the conversion from graph to text is done in `graph-to-text.js`
+It is possible to select one of those stats of interest and have it shown directly on the graph.
+Simply select what you are interested in and enter the name of that stat in the `Link label path`
+field at the top. The values for that stat will then be shown on the links between graph
+elements:
 
-Note the convertors (and the DSL) do not describe or support linking multiple nodes
-to a single node, but spring-flo supports that, you just need to enhance the
-convertors and have a representation in the DSL.
+image::imgs/numbersGraph.png[width="700"]
 
-If you wanted to use this sample in your domain, perhaps you would enhance `index.html`
-to include some kind of 'execute' button that used the text representation to
-drive some other (perhaps backend) API.
-
-The included `index.html` has basic buttons that exercise some of the control features
-of flo - for example turning off the palette and switching it to a read-only mode (for
-use when embedding flo into something that should just be showing a read only view of a
-pipeline).
-
-# Navigating the sample
-
-In order to keep the project to a single build file, spring-flo is referenced
-through the maven pom using webjars dependencies.
-
-- `index.html` the single HTML file that embeds sping-flo
-- `main.js` the launch config file for requirejs, referenced from index.html
-- `sample-app.js` setup the angular app with custom services
-- `metamodel-service.js` the custom metamodel service for this usage of spring-flo
-- `editor-service.js` the custom editor service for this usage of spring-flo
-- `render-service.js` the custom render service for this usage of spring-flo
-- `metamodel-sample.json` a basic json description of the domain
-- `graph-to-text.js` convert from the graph form to our custom DSL text
-- `text-to-graph.js` convert from the custom DSL text to our graph form
+If you enter a Refresh rate (minimal allowed is 250ms) then that stat will actually
+update on the graph at that rate with a small animation indicating where on the graph changes
+in value are occurring.
 
