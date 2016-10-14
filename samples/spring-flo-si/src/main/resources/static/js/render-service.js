@@ -713,11 +713,13 @@ define(function(require) {
         
         function getLinkAnchorPoint(linkView, view, magnet, reference) {
             if (magnet) {
-                var type = magnet.getAttribute('type');
+                var cssClass = magnet.getAttribute('class');
                 var bbox = joint.V(magnet).bbox(false, linkView.paper.viewport);
                 var rect = joint.g.rect(bbox);
-                if (type === 'input') {
+                if (cssClass.indexOf('input-port') !== -1) {
                     return joint.g.point(rect.x, rect.y + rect.height / 2);
+                } else if (cssClass.indexOf('error-port') !== -1) {
+                    return joint.g.point(rect.x + rect.width / 2, rect.y + rect.height);
                 } else {
                     return joint.g.point(rect.x + rect.width, rect.y + rect.height / 2);
                 }
